@@ -1,0 +1,108 @@
+spring:
+  datasource:
+    #url: jdbc:jtds:sqlserver://localhost:1433;DatabaseName=master
+    url: jdbc:mysql://localhost:3306/ciika?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: admin
+    #driver-class-name: net.sourceforge.jtds.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
+    ###################以下为druid增加的配置###########################
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      db-type: sqlserver
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initial-size: 5
+      # 最小连接池数量
+      min-idle: 5
+      # 最大连接池数量
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      test-while-idle: true
+      #既作为检测的间隔时间又作为testWhileIdel执行的依据
+      time-between-eviction-runs-millis: 60000
+      #销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      min-evictable-idle-time-millis: 30000
+      #用来检测连接是否有效的sql 必须是一个查询语句
+      #mssql中为 select 1
+      #mysql中为 select 'x'
+      #oracle中为 select 1 from dual
+      validation-query: select 1
+      #申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-borrow: false
+      #归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-return: false
+      #当数据库抛出不可恢复的异常时,抛弃该连接
+      #exception-sorter: true
+      #是否缓存preparedStatement,mysql5.5+建议开启
+      pool-prepared-statements: true
+      #当值大于0时poolPreparedStatements会自动修改为true
+      max-pool-prepared-statement-per-connection-size: 20
+      #配置扩展插件
+      #配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall,slf4j
+      #通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      #合并多个DruidDataSource的监控数据
+      use-global-data-source-stat: true
+      #设置访问druid监控页（访问地址http://localhost:port/druid/login.html）的账号和密码,默认没有
+      stat-view-servlet:
+        login-username: admin
+        login-password: admin
+        enabled: true
+      #开启web filter
+      web-stat-filter:
+        enabled: true
+
+
+####################  mybatis-plus配置  ###################
+mybatis-plus:
+  #外部化xml配置
+  #config-location: classpath:mybatis-config.xml
+  #指定外部化 MyBatis Properties 配置，通过该配置可以抽离配置，实现不同环境的配置部署
+  #configuration-properties: classpath:mybatis/config/properties
+  #xml扫描，多个目录用逗号或者分号分割（告诉 Mapper 所对应的 XML 文件位置）
+  mapper-locations: classpath*:com/wongoing/sys/mapper/xml/*.xml
+  #MyBatis 别名包扫描路径，通过该属性可以给包中的类注册别名，多个路径用逗号分割
+  type-aliases-package: com.wongoing.sys.entity
+  #如果配置了该属性，则仅仅会扫描路径下以该类作为父类的域对象
+  type-aliases-super-type: java.lang.Object
+  #枚举类 扫描路径，如果配置了该属性，会将路径下的枚举类进行注入，让实体类字段能够简单快捷的使用枚举属性
+  #type-enums-package: com.wongoing.sys.entity
+  #项目启动会检查xml配置存在（只在开发时打开）
+  check-config-location: true
+  #SIMPLE：该执行器类型不做特殊的事情，为每个语句的执行创建一个新的预处理语句，REUSE：改执行器类会复用预处理语句，BATCH：该执行器类型会批量执行所有的更新语句
+  default-executor-type: REUSE
+  configuration:
+    # 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射
+    map-underscore-to-camel-case: true
+    # 全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存，默认为 true
+    cache-enabled: true
+    #懒加载
+    aggressive-lazy-loading: true
+    #none：不启用自动映射 partial：只对非嵌套的 resultMap 进行自动映射 full：对所有的 resultMap 都进行自动映射
+    auto-mapping-behavior: partial
+    #none：不做任何处理 (默认值)warning：以日志的形式打印相关警告信息 failing：当作映射失败处理，并抛出异常和详细信息
+    auto-mapping-unknown-column-behavior: none
+    #如果查询结果中包含空值的列，则 MyBatis 在映射的时候，会不会映射这个字段
+    call-setters-on-nulls: true   #允许在resultType="map"时映射null值
+    #这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #是否允许映射结果为多个数据集
+    multiple-result-sets-enabled: false
+  global-config:
+    db-config:
+      #数据库类型
+      db-type: sql_server
+      #表名下划线命名默认为true
+      table-underline: false
+      #id类型: 0  # 0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+      id-type: auto
+      #是否开启大写命名，默认不开启
+      capital-mode: false
+      #逻辑已删除值,(逻辑删除下有效) 需要注入逻辑策略LogicSqlInjector 以@Bean方式注入
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+      #逻辑未删除值,(逻辑删除下有效)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
